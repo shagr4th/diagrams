@@ -41,8 +41,8 @@ def builder():
         except Exception as err:
             values.update({
               "diagrams_data": diagrams_data,
-              "error": err
-          })
+              "error": str(err).strip().replace('\\n', '<br>').replace('\\r', '<br>')
+            })
 
     return render_template(template, **values)
 

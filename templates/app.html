@@ -33,6 +33,9 @@
         .column {
           flex: 1 1 0%;
         }
+        pre {
+          white-space: pre-wrap;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
@@ -52,7 +55,9 @@
         </div>
         {% if error %}
           <h4>ERROR</h4>
-          <pre><code>{{error}}</code></pre>
+          <pre>{% autoescape false %}
+            {{error}}
+          {% endautoescape %}</pre>
         {% elif pic_name %}
           <img src="static/{{pic_name}}" alt="">
         {% endif %}
