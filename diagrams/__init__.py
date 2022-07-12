@@ -173,7 +173,7 @@ class Diagram(_Cluster):
             filename = "diagrams_image"
         elif not filename:
             filename = "_".join(self.name.split()).lower()
-        self.filename = filename
+        self.filename = "static/" + filename
         super().__init__(self.name, filename=self.filename)
         self.edges = {}
 
