@@ -28,7 +28,7 @@ COPY . .
 RUN pip install Flask black graphviz jinja2
 
 RUN wget https://github.com/material-icons/material-icons-png/archive/refs/heads/master.zip -O master.zip && \
-    unzip -d /tmp master.zip && rm -f master.zip && mv /tmp/material-icons-png-master/png && \
+    unzip -d /tmp master.zip && rm -f master.zip && mv /tmp/material-icons-png-master/png / && \
     rm -rf /tmp/material-icons-png-master
 
 ENTRYPOINT ["python3"]
