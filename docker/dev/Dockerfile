@@ -3,7 +3,7 @@ FROM python:3-alpine
 
 # install system dependencies.
 RUN apk update && apk add --no-cache \
-  gcc libc-dev g++ graphviz git bash go imagemagick inkscape ttf-opensans curl fontconfig xdg-utils cairo python3-dev libffi-dev
+  gcc libc-dev g++ graphviz git bash go imagemagick inkscape ttf-opensans curl fontconfig xdg-utils
 
 # install go package.
 RUN go install github.com/mingrammer/round@v0.0.2
@@ -25,10 +25,15 @@ WORKDIR /usr/src/diagrams
 COPY . .
 
 # install python requirements.
-RUN pip install Flask black graphviz jinja2 cairosvg
+RUN pip install Flask black graphviz jinja2
+
+RUN wget https://github.com/material-icons/material-icons-png/archive/refs/heads/master.zip -O master.zip && \
+    unzip -d /tmp master.zip && rm -f master.zip && mv /tmp/material-icons-png-master/png && \
+    rm -rf /tmp/material-icons-png-master
 
 ENTRYPOINT ["python3"]
 CMD ["app.py"]
 
 # docker build -t shagr4th/diagrams -f $(pwd)/docker/dev/Dockerfile $(pwd)
-# docker run -p 5000:5000 --rm shagr4th/diagrams
+# RUNTIME : docker run -p 5000:5000 --rm shagr4th/diagrams
+# DEV & TEST : docker run -p 5000:5000 -v $(pwd):/usr/src/diagrams --rm shagr4th/diagrams
