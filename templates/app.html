@@ -23,36 +23,43 @@
           margin-bottom: 15px;
         }
         #container {
-          position: relative;
           min-height: 100vh;
-        }
-        .column {
-          flex: 1 1 0%;
         }
         pre {
           white-space: pre-wrap;
+        }
+        .split {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .gutter {
+            background-color: #eee;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+
+        .gutter.gutter-horizontal {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+            cursor: col-resize;
         }
     </style>
     <script src="https://unpkg.com/split.js/dist/split.min.js"></script>
     <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
   </head>
-  <body class="m-0 p-0 w-100 h-100 d-flex flex-column">
-    <div class="m-0 d-flex">
-      <div id="one" class="d-flex flex-column column">
-          <wc-monaco-editor id="container" language="javascript" ></wc-monaco-editor>
+  <body class="m-0 p-0 w-100 d-flex flex-row split">
+    <wc-monaco-editor id="container" language="python" ></wc-monaco-editor>
+    <div id="graph" class="d-flex flex-column h-100">
+      <div id="menu-bar" class="m-0 d-flex">
+        <div class="btn btn-primary m-2" value="Build" id="build">Build <i class="fas fa-angle-double-right"></i></div>
+        <div class="btn btn-primary m-2" id="btn_0">Example 1</div>
+        <div class="btn btn-primary m-2" id="btn_1">Example 2</div>
+        <div class="btn btn-primary m-2" id="btn_2">Example 3</div>
+        <div class="btn btn-primary m-2" id="btn_more">More examples</div>
       </div>
-      <div id="two" class="d-flex flex-column column h-100">
-        <div id="menu-bar" class="m-0 d-flex">
-          <div class="btn btn-primary m-2" value="Build" id="build">Build <i class="fas fa-angle-double-right"></i></div>
-          <div class="btn btn-primary m-2" id="btn_0">Example <i class="round">1</i></div>
-          <div class="btn btn-primary m-2" id="btn_1">Example <i class="round">2</i></div>
-          <div class="btn btn-primary m-2" id="btn_2">Example <i class="round">3</i></div>
-          <div class="btn btn-primary m-2" id="btn_more">More example</div>
-        </div>
-        <pre id="error"></pre>
-        <img id="image" alt="">
-      </div>
-    </div>   
+      <pre class="px-2" id="error"></pre>
+      <img class="px-2" id="image" alt="">
+    </div>
     <script id="text_0" type="bogus">
       from diagrams import Diagram
 from diagrams.aws.compute import EC2
@@ -138,62 +145,62 @@ with Diagram("Advanced Web Service with On-Premise", show=False):
     ingress >> grpcsvc >> aggregator
     </script>
     <script>
-        require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
-        window.MonacoEnvironment = { getWorkerUrl: () => URL.createObjectURL(new Blob([`
-          self.MonacoEnvironment = {
-            baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
-          };
-          importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
-        `], { type: 'text/javascript' })) };
+      window.Split(['#container', '#graph']);
+      require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
+      window.MonacoEnvironment = { getWorkerUrl: () => URL.createObjectURL(new Blob([`
+        self.MonacoEnvironment = {
+          baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
+        };
+        importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
+      `], { type: 'text/javascript' })) };
 
-        require(["vs/editor/editor.main"], function () {
-
-          function build() {
-            diagrams_data = editor.getValue()
-            error = document.getElementById('error');
-            image = document.getElementById('image');
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", '/', true);
-            xhr.onreadystatechange = function() {
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                  if (xhr.responseText && xhr.responseText.startsWith('/static')) {
-                    image.src = xhr.responseText;
-                    error.innerHTML = '';
-                  } else {
-                    image.src = '';
-                    error.innerHTML = xhr.responseText;
-                  }
-                }
+      require(["vs/editor/editor.main"], function () {
+        function build() {
+          diagrams_data = editor.getValue()
+          error = document.getElementById('error');
+          image = document.getElementById('image');
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", '/', true);
+          xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+              if (xhr.responseText && xhr.responseText.startsWith('/static')) {
+                image.src = xhr.responseText;
+                error.innerHTML = '';
+              } else {
+                image.src = '';
+                error.innerHTML = xhr.responseText;
+              }
             }
-            xhr.send(diagrams_data);
           }
+          xhr.send(diagrams_data);
+        }
 
-          container = document.getElementById('container');
-          let editor = monaco.editor.create(container, {
-            value: document.getElementById('text_0').innerHTML.trim(),
-            language: 'python',
-            theme: 'vs-dark'
-          });
-          build();
-
-          document.getElementById('build').onclick = build;
-          document.getElementById('btn_0').onclick = function(){
-            editor.setValue(document.getElementById('text_0').innerHTML.trim());
-            build();
-          }
-          document.getElementById('btn_1').onclick = function(){
-            editor.setValue(document.getElementById('text_1').innerHTML.trim());
-            build();
-          }
-          document.getElementById('btn_2').onclick = function(){
-            editor.setValue(document.getElementById('text_2').innerHTML.trim());
-            build();
-          }
-          document.getElementById('btn_more').onclick = function(){
-            window.open("https://diagrams.mingrammer.com/docs/getting-started/examples", "_blank");
-          };
-          
+        container = document.getElementById('container');
+        let editor = monaco.editor.create(container, {
+          value: document.getElementById('text_0').innerHTML.trim(),
+          language: 'python',
+          theme: 'vs-dark',
+          automaticLayout: true
         });
+        build();
+
+        document.getElementById('build').onclick = build;
+        document.getElementById('btn_0').onclick = function(){
+          editor.setValue(document.getElementById('text_0').innerHTML.trim());
+          build();
+        }
+        document.getElementById('btn_1').onclick = function(){
+          editor.setValue(document.getElementById('text_1').innerHTML.trim());
+          build();
+        }
+        document.getElementById('btn_2').onclick = function(){
+          editor.setValue(document.getElementById('text_2').innerHTML.trim());
+          build();
+        }
+        document.getElementById('btn_more').onclick = function(){
+          window.open("https://diagrams.mingrammer.com/docs/getting-started/examples", "_blank");
+        };
+      });
     </script>
 
   </body>
