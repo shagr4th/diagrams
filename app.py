@@ -1,15 +1,12 @@
 from flask import Flask, render_template, request
 import os
 import datetime
-import subprocess
 
 app = Flask(__name__)
 
-
 @app.route('/', methods=['GET'])
 def builder():
-    values = {}
-    return render_template('app.html', **values)
+    return render_template('app.html')
 
 @app.route('/', methods=['POST'])
 def image():
