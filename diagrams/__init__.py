@@ -107,6 +107,7 @@ class _Cluster:
 class Diagram(_Cluster):
     __curvestyles = ("ortho", "curved")
     __outformats = ("png", "jpg", "svg", "pdf", "dot")
+    __embedformats = ("png", "jpg")
 
     # fmt: off
     _default_graph_attrs = {
@@ -153,6 +154,7 @@ class Diagram(_Cluster):
         graph_attr: dict = {},
         node_attr: dict = {},
         edge_attr: dict = {},
+        embed = False
     ):
         """Diagram represents a global diagrams context.
 
@@ -210,6 +212,7 @@ class Diagram(_Cluster):
         self.dot.edge_attr.update(edge_attr)
 
         self.show = show
+        self.embed = embed
 
     def __enter__(self):
         setdiagram(self)
@@ -233,7 +236,55 @@ class Diagram(_Cluster):
 
         self.render()
         # Remove the graphviz file leaving only the image.
+        if self.embed:
+            self._embed_svg()
         os.remove(self.filename)
+
+    # https://github.com/FFengIll/diagrams/commit/d6970ab8a19e8f07899565999576def77857dbd1
+    def _embed_svg(self):
+        """
+        Process svg href here
+        <image xlink:href="..." .../>
+        <image xlink:href="data:image/png;base64,..." .../>
+        """
+        if self.outformat != 'svg':
+            return
+
+        from lxml import etree
+        from base64 import b64encode
+        import traceback
+        import os
+
+        path = self.filename + '.svg'
+        xml = etree.parse(path)
+
+        svg = xml.getroot()
+
+        # Mention: must give svg namespace
+        tag_image = './/{http://www.w3.org/2000/svg}image'
+        tag_href = '{http://www.w3.org/1999/xlink}href'
+
+        for img in svg.findall(tag_image):
+            rsc = img.attrib.get(tag_href, None)
+
+            # Only process local image files
+            if rsc is None or not os.path.exists(rsc):
+                continue
+
+            # Only support some pre-define type
+            ext = rsc.split('.')[-1]
+            if ext not in self.__embedformats:
+                continue
+
+            # Use base64 to embed the image resource
+            with open(rsc, 'rb') as data:
+                b = data.read()
+                code = b64encode(b)
+                img.attrib[tag_href] = 'data:image/{};base64,{}'.format(
+                    ext, code.decode())
+
+        # Write back to the svg file
+        etree.ElementTree(svg).write(path)
 
     def _repr_png_(self):
         return self.dot.pipe(format="png")

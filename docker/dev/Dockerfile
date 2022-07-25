@@ -25,7 +25,7 @@ WORKDIR /usr/src/diagrams
 COPY . .
 
 # install python requirements.
-RUN pip install Flask black graphviz jinja2
+RUN pip install Flask black graphviz jinja2 lxml
 
 RUN wget https://github.com/material-icons/material-icons-png/archive/refs/heads/master.zip -O master.zip && \
     unzip -d /tmp master.zip && rm -f master.zip && mv /tmp/material-icons-png-master/png / && \

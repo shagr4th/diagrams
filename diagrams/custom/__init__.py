@@ -21,7 +21,8 @@ class Custom(Node):
         if icon_path.startswith('data:image/'):
             with urlopen(icon_path) as response:
                 data = response.read()
-                icon_path = "/tmp/" + hashlib.md5(data).hexdigest()
+                imageformat = icon_path[11:icon_path.index(';')]
+                icon_path = "/tmp/" + hashlib.md5(data).hexdigest() + "." + imageformat
                 with open(icon_path, "wb") as f:
                     f.write(data)
                     f.close()
