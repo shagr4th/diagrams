@@ -13,49 +13,34 @@
           width: 100%;
           height: auto;
         }
-        .icon {
-          width: 100px;
-        }
-        #menu-bar {
-          width: 100%;
-          margin-left: 10px;
-          margin-top: 10px;
-          margin-bottom: 15px;
-        }
         #container {
           min-height: 100vh;
         }
         pre {
           white-space: pre-wrap;
         }
-        .split {
-            display: flex;
-            flex-direction: row;
-        }
-
         .gutter {
-            background-color: #eee;
+            background-color: black;
             background-repeat: no-repeat;
             background-position: 50%;
         }
-
         .gutter.gutter-horizontal {
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
             cursor: col-resize;
         }
     </style>
-    <script src="https://unpkg.com/split.js/dist/split.min.js"></script>
-    <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/split.js@1.6.5/dist/split.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
   </head>
-  <body class="m-0 p-0 w-100 d-flex flex-row split">
+  <body class="m-0 p-0 w-100 d-flex flex-row">
     <wc-monaco-editor id="container" language="python" ></wc-monaco-editor>
     <div id="graph" class="d-flex flex-column h-100">
-      <div id="menu-bar" class="m-0 d-flex">
-        <div class="btn btn-primary m-1" value="Build" id="build">Build <i class="fas fa-angle-double-right"></i></div>
-        <div class="btn btn-primary m-1" id="btn_0">Example 1</div>
-        <div class="btn btn-primary m-1" id="btn_1">Example 2</div>
-        <div class="btn btn-primary m-1" id="btn_2">Example 3</div>
-        <div class="btn btn-primary m-1" id="btn_more">More</div>
+      <div class="d-flex">
+        <div class="btn btn-primary ml-1 my-1" value="Build" id="build">Build</div>
+        <div class="btn btn-secondary ml-1 my-1" id="btn_0">Example 1</div>
+        <div class="btn btn-secondary ml-1 my-1" id="btn_1">Example 2</div>
+        <div class="btn btn-secondary ml-1 my-1" id="btn_2">Example 3</div>
+        <div class="btn btn-secondary ml-1 my-1" id="btn_more">More</div>
       </div>
       <pre class="px-1" id="error"></pre>
       <img class="px-1" id="image" alt="">
@@ -146,12 +131,12 @@ with Diagram("Advanced Web Service with On-Premise", show=False):
     </script>
     <script>
       window.Split(['#container', '#graph']);
-      require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@latest/min/vs' }});
+      require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' }});
       window.MonacoEnvironment = { getWorkerUrl: () => URL.createObjectURL(new Blob([`
         self.MonacoEnvironment = {
-          baseUrl: 'https://unpkg.com/monaco-editor@latest/min/'
+          baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min'
         };
-        importScripts('https://unpkg.com/monaco-editor@latest/min/vs/base/worker/workerMain.js');
+        importScripts('https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/base/worker/workerMain.js');
       `], { type: 'text/javascript' })) };
 
       require(["vs/editor/editor.main"], function () {
