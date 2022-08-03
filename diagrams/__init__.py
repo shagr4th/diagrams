@@ -107,7 +107,7 @@ class _Cluster:
 class Diagram(_Cluster):
     __curvestyles = ("ortho", "curved")
     __outformats = ("png", "jpg", "svg", "pdf", "dot")
-    __embedformats = ("png", "jpg")
+    __embedformats = ("png", "jpg", "svg")
 
     # fmt: off
     _default_graph_attrs = {
