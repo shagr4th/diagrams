@@ -272,20 +272,19 @@ class Diagram(_Cluster):
             if rsc is None or not os.path.exists(rsc):
                 continue
 
-            print(rsc)
-
             # Only support some pre-define type
             ext = rsc.split('.')[-1]
             if ext not in self.__embedformats:
                 continue
 
-            # Use base64 to embed the image resource
             with open(rsc, 'rb') as data:
                 b = data.read()
                 if ext == 'svg':
+                    # Use data uri xml to embed the svg resource
                     img.attrib[tag_href] = 'data:image/svg+xml,{}'.format(
                     urllib.parse.quote(b.decode('utf-8')))
                 else:
+                    # Use base64 to embed the image resource
                     code = b64encode(b)
                     img.attrib[tag_href] = 'data:image/{};base64,{}'.format(
                         ext, code.decode())
