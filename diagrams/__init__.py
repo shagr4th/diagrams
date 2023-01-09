@@ -2,6 +2,7 @@ import contextvars
 import html
 import os
 import uuid
+import urllib.parse
 from pathlib import Path
 from typing import List, Union, Dict, Sequence
 
@@ -271,6 +272,8 @@ class Diagram(_Cluster):
             if rsc is None or not os.path.exists(rsc):
                 continue
 
+            print(rsc)
+
             # Only support some pre-define type
             ext = rsc.split('.')[-1]
             if ext not in self.__embedformats:
@@ -279,9 +282,13 @@ class Diagram(_Cluster):
             # Use base64 to embed the image resource
             with open(rsc, 'rb') as data:
                 b = data.read()
-                code = b64encode(b)
-                img.attrib[tag_href] = 'data:image/{};base64,{}'.format(
-                    ext, code.decode())
+                if ext == 'svg':
+                    img.attrib[tag_href] = 'data:image/svg+xml,{}'.format(
+                    urllib.parse.quote(b.decode('utf-8')))
+                else:
+                    code = b64encode(b)
+                    img.attrib[tag_href] = 'data:image/{};base64,{}'.format(
+                        ext, code.decode())
 
         # Write back to the svg file
         etree.ElementTree(svg).write(path)
